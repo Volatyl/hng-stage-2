@@ -51,7 +51,7 @@ def person(id):
         if not person:
             return jsonify({'error': 'Person not found'}), 404
 
-        return jsonify({'attributes': person.attributes})
+        return jsonify({'id': person.id, 'attributes': person.attributes})
 
     if request.method == 'PUT':
         if not person:
