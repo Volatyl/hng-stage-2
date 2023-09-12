@@ -47,13 +47,15 @@ def create_person():
 def person(id):
     person = Person.query.filter_by(id=id).first()
 
-    if not person:
-        return jsonify({'error': 'Person not found'}), 404
-
     if request.method == 'GET':
+        if not person:
+            return jsonify({'error': 'Person not found'}), 404
+
         return jsonify({'attributes': person.attributes})
 
     if request.method == 'PUT':
+        if not person:
+            return jsonify({'error': 'Person not found'}), 404
         try:
             data = request.get_json()
             new_attributes = data.get('attributes')
@@ -69,6 +71,9 @@ def person(id):
             return jsonify({'error': str(e)}), 500
 
     if request.method == 'DELETE':
+        if not person:
+            return jsonify({'error': 'Person not found'}), 404
+        
         db.session.delete(person)
         db.session.commit()
         return jsonify({'message': 'Person deleted successfully'}), 200
