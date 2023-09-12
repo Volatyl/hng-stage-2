@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import validates
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///persons.db'
@@ -8,19 +9,32 @@ db = SQLAlchemy(app)
 
 class Person(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
+    attributes = db.Column(db.JSON, nullable=False)
 
-    def __init__(self, name):
-        self.name = name
+    def __repr__(self):
+        return f'Attributes: {self.attributes}'
+
+    @validates('attributes')
+    def validate_attributes(self, key, attributes):
+        if not isinstance(attributes, dict):
+            raise ValueError("Attributes must be a dictionary")
+
+        if not all(isinstance(value, str) for value in attributes.values()):
+            raise ValueError("All values in attributes must be strings")
+
+        return attributes
 
 
 @app.route('/api', methods=['POST'])
 def create_person():
     try:
         data = request.get_json()
-        name = data['name']
+        attributes = data.get('attributes')
 
-        new_person = Person(name=name)
+        if not attributes:
+            return jsonify({'error': 'Attributes not provided'}), 400
+
+        new_person = Person(attributes=attributes)
         db.session.add(new_person)
         db.session.commit()
 
@@ -37,14 +51,17 @@ def person(id):
         return jsonify({'error': 'Person not found'}), 404
 
     if request.method == 'GET':
-        return jsonify({'name': person.name})
+        return jsonify({'attributes': person.attributes})
 
     if request.method == 'PUT':
         try:
             data = request.get_json()
-            new_name = data['name']
+            new_attributes = data.get('attributes')
 
-            person.name = new_name
+            if not new_attributes:
+                return jsonify({'error': 'Attributes not provided'}), 400
+
+            person.attributes = new_attributes
             db.session.commit()
 
             return jsonify({'message': 'Person updated successfully'}), 200
