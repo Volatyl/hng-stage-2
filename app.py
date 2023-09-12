@@ -73,7 +73,7 @@ def person(id):
     if request.method == 'DELETE':
         if not person:
             return jsonify({'error': 'Person not found'}), 404
-        
+
         db.session.delete(person)
         db.session.commit()
         return jsonify({'message': 'Person deleted successfully'}), 200

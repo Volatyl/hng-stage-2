@@ -18,10 +18,10 @@ This API controls a person resource. You can perform complete CRUD on a person i
         data should be a json object 'attributes' that has all the attributes for the person instance to be created. example
 
             {
-            "attributes": {
-            "name": "Chao",
-            "occupation": "Teacher"
-            }
+                "attributes": {
+                    "name": "Chao",
+                    "occupation": "Teacher"
+                }
             }
   - Response -> 
         * 200 Person created successfully
@@ -34,5 +34,30 @@ This API controls a person resource. You can perform complete CRUD on a person i
   - send request via 'GET' method
   - Response -> 
         * 200 Person object
+        * 404 Person not found
+
+# Edit User
+
+- default url '/api/user_id'
+  - Use this endpoint to edit a person instance.
+  - send request via 'PUT' method
+  - Request -> 
+            {
+                "attributes": {
+                    "key": "value",
+                }
+            }
+  - Response -> 
+        * 200 Update Success
+        * 400 Attributes not provided
+        * 404 Person not found
+
+# Delete User
+
+- default url '/api/user_id'
+  - Use this endpoint to delete a person instance.
+  - send request via 'DELETE' method
+  - Response -> 
+        * 200 Delete Successful
         * 404 Person not found
 
